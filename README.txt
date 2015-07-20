@@ -1,0 +1,1 @@
+Orange Widget Core
