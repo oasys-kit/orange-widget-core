@@ -1,7 +1,5 @@
 #! /usr/bin/env python
 
-import sys
-
 try:
     import setuptools
 except ImportError:
@@ -27,13 +25,18 @@ PACKAGE_DATA = {
     "orangewidget": ["icons/*.svg", "icons/*png"],
 }
 
-INSTALL_REQUIRES = ("orange-canvas-core>=0.0,<0.1",)
+SETUP_REQUIRES = (
+    "setuptools"
+)
 
+INSTALL_REQUIRES = (
+    "setuptools",
+    "orange-canvas-core>=0.0,<0.1",
+)
 
 CLASSIFIERS = (
     "Development Status :: 1 - Planning",
     "Environment :: X11 Applications :: Qt",
-    "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Operating System :: OS Independent",
@@ -55,6 +58,7 @@ if __name__ == "__main__":
           license=LICENSE,
           packages=PACKAGES,
           package_data=PACKAGE_DATA,
+          setup_requires=SETUP_REQUIRES,
           install_requires=INSTALL_REQUIRES,
          )
 
