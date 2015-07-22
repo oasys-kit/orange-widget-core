@@ -8,7 +8,7 @@ except ImportError:
 
 from setuptools import setup, find_packages
 
-NAME = "Orange-Widgets-Core"
+NAME = "Orange-Widget-Core"
 VERSION = "0.0.0"
 DESCRIPTION = "Core orange widget utilities"
 LONG_DESCRIPTION = open("README.txt", "rt").read()
