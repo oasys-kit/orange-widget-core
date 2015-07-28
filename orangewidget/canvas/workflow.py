@@ -249,6 +249,10 @@ class WidgetManager(QObject):
             state.future.cancel()
             del self.__initstate_for_node[node]
         else:
+            # Update the node's stored settings/properties dict before
+            # removing the widget.
+            # TODO: Update/sync whenever the widget settings change.
+            node.properties = self._widget_settings(state.widget)
             self.__widgets.remove(state.widget)
             del self.__initstate_for_node[node]
             del self.__widget_for_node[node]
@@ -262,6 +266,9 @@ class WidgetManager(QObject):
             self._delete_widget(state.widget)
 
         node.removeEventFilter(self)
+
+    def _widget_settings(self, widget):
+        return widget.settingsHandler.pack_data(widget)
 
     def _delete_widget(self, widget):
         """
