@@ -12,7 +12,8 @@ from PyQt4.QtCore import (
 )
 from PyQt4.QtGui import (
     QDialog, QPixmap, QLabel, QVBoxLayout, QSizePolicy,
-    qApp, QFrame, QStatusBar, QHBoxLayout, QStyle, QApplication
+    qApp, QFrame, QStatusBar, QHBoxLayout, QStyle, QApplication,
+    QAction
 )
 
 from orangecanvas.registry import description as _description
@@ -777,3 +778,16 @@ class OWWidget(QDialog, metaclass=WidgetMetaClass):
 
     def resetSettings(self):
         self.settingsHandler.reset_settings(self)
+
+
+class OWAction(QAction):
+    """
+    An action to be inserted into canvas right click context menu.
+
+    Actions defined and added this way are pulled from the widget and
+    inserted into canvas GUI's right context menu. The actions must
+    be defined in the OWWidget's `__init__` method and added to the
+    widget with `QWidget.addAction`.
+
+    """
+    pass

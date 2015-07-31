@@ -36,6 +36,9 @@ from orangecanvas.scheme import Scheme, SchemeNode, events
 from orangecanvas.scheme.node import UserMessage
 from orangecanvas.utils import name_lookup
 from orangecanvas.resources import icon_loader
+from orangecanvas.utils.qtcompat import qunwrap
+
+from ..widget import OWAction
 
 log = logging.getLogger(__name__)
 
@@ -252,8 +255,12 @@ class WidgetManager(QObject):
             node.title_changed.disconnect(state.widget.setCaption)
             state.widget.progressBarValueChanged.disconnect(node.set_progress)
 
+            if qunwrap(node.property("ext-menu-actions")) is not None:
+                node.setProperty("ext-menu-actions", None)
+
             self.widget_for_node_removed.emit(node, state.widget)
             self._delete_widget(state.widget)
+
         node.removeEventFilter(self)
 
     def _delete_widget(self, widget):
@@ -347,6 +354,9 @@ class WidgetManager(QObject):
             QKeySequence(Qt.ControlModifier + Qt.Key_Up), widget)
         up_shortcut.activated.connect(self.__on_activate_parent)
 
+        owactions = [action for action in widget.actions()
+                     if isinstance(action, OWAction)]
+        node.setProperty("ext-menu-actions", owactions)
         return widget
 
     def node_processing_state(self, node):
