@@ -9,7 +9,7 @@ except ImportError:
 from setuptools import setup, find_packages
 
 NAME = "Orange-Widget-Core"
-VERSION = "0.0.1"
+VERSION = "0.0.2"
 DESCRIPTION = "Core orange widget utilities"
 LONG_DESCRIPTION = open("README.txt", "rt").read()
 
@@ -31,7 +31,7 @@ SETUP_REQUIRES = (
 
 INSTALL_REQUIRES = (
     "setuptools",
-    "orange-canvas-core>=0.0,<0.1",
+    "orange-canvas-core>=0.0.6,<0.1",
 )
 
 CLASSIFIERS = (
