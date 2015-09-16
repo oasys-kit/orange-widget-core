@@ -3,7 +3,7 @@ import sys
 import time
 import os
 import warnings
-
+import types
 from functools import reduce
 from collections import namedtuple
 
@@ -137,6 +137,13 @@ class OutputSignal(_OutputSignal):
                             "(got {0!r})".format(type(args)))
 
 
+def _asmappingproxy(mapping):
+    if isinstance(mapping, types.MappingProxyType):
+        return mapping
+    else:
+        return types.MappingProxyType(mapping)
+
+
 class WidgetMetaClass(type(QDialog)):
     """Meta class for widgets. If the class definition does not have a
        specific settings handler, the meta class provides a default one
@@ -220,7 +227,7 @@ class OWWidget(QDialog, metaclass=WidgetMetaClass):
             self.settingsHandler.initialize(self, stored_settings)
 
         self.signalManager = kwargs.get('signal_manager', None)
-        self.__env = kwargs.get("env", {})
+        self.__env = _asmappingproxy(kwargs.get("env", {}))
 
         setattr(self, gui.CONTROLLED_ATTRIBUTES, gui.ControlledAttributesDict(self))
         self.__reportData = None
@@ -783,7 +790,25 @@ class OWWidget(QDialog, metaclass=WidgetMetaClass):
         self.settingsHandler.reset_settings(self)
 
     def getWorkflowEnv(self):
-        return dict(self.__env)
+        """
+        Return (a view to) the workflow runtime environment.
+
+        Returns
+        -------
+        env : types.MappingProxyType
+        """
+        return self.__env
+
+    def workflowEnvChanged(self, key, value, oldvalue):
+        """
+        A workflow environment variable `key` has changed to value.
+
+        Called by the canvas framework to notify widget of a change
+        in the workflow runtime environment.
+
+        The default implementation does nothing.
+        """
+        pass
 
 
 class OWAction(QAction):
