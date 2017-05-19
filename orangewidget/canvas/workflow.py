@@ -22,12 +22,15 @@ import concurrent.futures
 from collections import namedtuple
 
 import sip
-from PyQt4.QtGui import (
-    QShortcut, QKeySequence, QWhatsThisClickedEvent, QWidget
+from PyQt5.QtWidgets import (
+    QShortcut, QWidget
+)
+from PyQt5.QtGui import (
+    QKeySequence, QWhatsThisClickedEvent
 )
 
-from PyQt4.QtCore import Qt, QObject, QCoreApplication, QTimer, QEvent
-from PyQt4.QtCore import pyqtSignal as Signal
+from PyQt5.QtCore import Qt, QObject, QCoreApplication, QTimer, QEvent
+from PyQt5.QtCore import pyqtSignal as Signal
 
 from orangecanvas.scheme.signalmanager import \
     SignalManager, compress_signals, can_enable_dynamic

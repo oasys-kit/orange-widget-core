@@ -7,13 +7,16 @@ import warnings
 from functools import reduce
 from collections import namedtuple
 
-from PyQt4.QtCore import (
+from PyQt5.QtCore import (
     Qt, QByteArray, QEventLoop, pyqtSignal as Signal, pyqtProperty
 )
-from PyQt4.QtGui import (
-    QDialog, QPixmap, QLabel, QVBoxLayout, QSizePolicy,
+from PyQt5.QtWidgets import (
+    QDialog, QLabel, QVBoxLayout, QSizePolicy,
     qApp, QFrame, QStatusBar, QHBoxLayout, QStyle, QApplication,
     QAction
+)
+from PyQt5.QtGui import (
+    QPixmap
 )
 
 from orangecanvas.registry import description as _description
@@ -270,7 +273,7 @@ class OWWidget(QDialog, metaclass=WidgetMetaClass):
             return w
 
         self.setLayout(QVBoxLayout())
-        self.layout().setMargin(2)
+        self.layout().setContentsMargins(2, 2, 2, 2)
 
         self.warning_bar = gui.widgetBox(self, orientation="horizontal",
                                          margin=0, spacing=0)
@@ -294,7 +297,7 @@ class OWWidget(QDialog, metaclass=WidgetMetaClass):
                                           sizePolicy=QSizePolicy(QSizePolicy.Expanding,
                                                                  QSizePolicy.Expanding),
                                           margin=0)
-            self.mainArea.layout().setMargin(4)
+            self.mainArea.layout().setContentsMargins(4, 4, 4, 4)
             self.mainArea.updateGeometry()
 
         if self.want_control_area:

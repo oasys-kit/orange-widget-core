@@ -8,8 +8,8 @@ except ImportError:
 
 from setuptools import setup, find_packages
 
-NAME = "Orange-Widget-Core"
-VERSION = "0.0.2"
+NAME = "Oasys-Widget-Core"
+VERSION = "0.0.1"
 DESCRIPTION = "Core orange widget utilities"
 LONG_DESCRIPTION = open("README.txt", "rt").read()
 
@@ -18,7 +18,7 @@ AUTHOR = "Bioinformatics Laboratory, FRI UL"
 AUTHOR_EMAIL = 'contact@orange.biolab.si'
 
 LICENSE = "GPLv3"
-DOWNLOAD_URL = 'https://github.org/ales-erjavec/orange-widget-core'
+DOWNLOAD_URL = 'https://github.org/lucarebuffi/orange-widget-core'
 PACKAGES = find_packages()
 
 PACKAGE_DATA = {
@@ -31,7 +31,7 @@ SETUP_REQUIRES = (
 
 INSTALL_REQUIRES = (
     "setuptools",
-    "orange-canvas-core>=0.0.6,<0.1",
+    "oasys-canvas-core>=0.0.1,<0.1",
 )
 
 CLASSIFIERS = (
