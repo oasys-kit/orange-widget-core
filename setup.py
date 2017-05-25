@@ -9,7 +9,7 @@ except ImportError:
 from setuptools import setup, find_packages
 
 NAME = "Oasys-Widget-Core"
-VERSION = "0.0.1"
+VERSION = "0.0.4"
 DESCRIPTION = "Core orange widget utilities"
 LONG_DESCRIPTION = open("README.txt", "rt").read()
 
@@ -31,7 +31,7 @@ SETUP_REQUIRES = (
 
 INSTALL_REQUIRES = (
     "setuptools",
-    "oasys-canvas-core>=0.0.1,<0.1",
+    "oasys-canvas-core>=0.0.1",
 )
 
 CLASSIFIERS = (

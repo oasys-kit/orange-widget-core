@@ -14,7 +14,13 @@ from PyQt5.QtCore import Qt, pyqtSignal as Signal, pyqtSlot as Slot
 from PyQt5.QtGui import QCursor
 from PyQt5.QtWidgets import QApplication
 
-from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineScript
+import platform
+
+if platform.system() == 'Darwin':
+    from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineScript
+elif platform.system() == 'Linux':
+    from PyQt5.QtWebKitWidgets import QWebView as QWebEngineView
+
 from PyQt5.QtWebChannel import QWebChannel
 
 CONTROLLED_ATTRIBUTES = "controlledAttributes"
@@ -235,6 +241,11 @@ class WebEngineView(QWebEngineView):
         QObject subclass implementing the required interface.
     """
 
+    if platform.system() == 'Darwin':
+        DEFAULT_INJECTION_POINT = QWebEngineScript.DocumentReady
+    elif platform.system() == 'Linux':
+        DEFAULT_INJECTION_POINT = None
+
     # Prefix added to objects exposed via WebviewWidget.exposeObject()
     # This caters to this class' subclass
     _EXPOSED_OBJ_PREFIX = '__ORANGE_'
@@ -292,16 +303,20 @@ class WebEngineView(QWebEngineView):
 
         self.page().setWebChannel(channel)
 
-    def _onloadJS(self, code, name='', injection_point=QWebEngineScript.DocumentReady):
-        script = QWebEngineScript()
-        script.setName(name or ('script_' + str(random())[2:]))
-        script.setSourceCode(code)
-        script.setInjectionPoint(injection_point)
-        script.setWorldId(script.MainWorld)
-        script.setRunsOnSubFrames(False)
-        self.page().scripts().insert(script)
-        self.loadStarted.connect(
-            lambda: self.page().scripts().insert(script))
+
+    def _onloadJS(self, code, name='', injection_point=DEFAULT_INJECTION_POINT):
+        if platform.system() == "Darwin":
+            script = QWebEngineScript()
+            script.setName(name or ('script_' + str(random())[2:]))
+            script.setSourceCode(code)
+            script.setInjectionPoint(injection_point)
+            script.setWorldId(script.MainWorld)
+            script.setRunsOnSubFrames(False)
+            self.page().scripts().insert(script)
+            self.loadStarted.connect(
+                lambda: self.page().scripts().insert(script))
+        else:
+            pass
 
     def runJavaScript(self, javascript, resultCallback=None):
         """
