@@ -16,10 +16,15 @@ from PyQt5.QtWidgets import QApplication
 
 import platform
 
-if platform.system() == 'Darwin':
-    from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineScript
-elif platform.system() == 'Linux':
-    from PyQt5.QtWebKitWidgets import QWebView as QWebEngineView
+try:
+    if platform.system() == 'Darwin':
+        from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineScript
+    elif platform.system() == 'Linux':
+        from PyQt5.QtWebKitWidgets import QWebView as QWebEngineView
+    USE_WEB_KIT = True
+except ImportError:
+    QWebView = None
+    USE_WEB_KIT = False
 
 from PyQt5.QtWebChannel import QWebChannel
 
@@ -224,114 +229,114 @@ class TableWidget(QtWidgets.QTableWidget):
         """
         return self.selectRowsWhere(col, value, n_hits, flags, False)
 
-
-class WebEngineView(QWebEngineView):
-    """
-    A QWebEngineView initialized to support communication with JS code.
-    Parameters
-    ----------
-    parent : QWidget
-        Parent widget object.
-    bridge : QObject
-        The "bridge" object exposed as a global object ``pybridge`` in
-        JavaScript. Any methods desired to be accessible from JS need
-        to be decorated with ``@QtCore.pyqtSlot(<*args>, result=<type>)``
-        decorator.
-        Note: do not use QWidget instances as a bridge, use a minimal
-        QObject subclass implementing the required interface.
-    """
-
-    if platform.system() == 'Darwin':
-        DEFAULT_INJECTION_POINT = QWebEngineScript.DocumentReady
-    elif platform.system() == 'Linux':
-        DEFAULT_INJECTION_POINT = None
-
-    # Prefix added to objects exposed via WebviewWidget.exposeObject()
-    # This caters to this class' subclass
-    _EXPOSED_OBJ_PREFIX = '__ORANGE_'
-
-    def __init__(self, parent=None, bridge=None, *, debug=False, **kwargs):
-        debug = debug or _ORANGE_DEBUG
-        if debug:
-            port = os.environ.setdefault('QTWEBENGINE_REMOTE_DEBUGGING', '12088')
-            warnings.warn(
-                'To debug QWebEngineView, set environment variable '
-                'QTWEBENGINE_REMOTE_DEBUGGING={port} and then visit '
-                'http://127.0.0.1:{port}/ in a Chromium-based browser. '
-                'See https://doc.qt.io/qt-5/qtwebengine-debugging.html '
-                'This has also been done for you.'.format(port=port))
-        super().__init__(parent,
-                         sizeHint=QSize(500, 400),
-                         sizePolicy=QSizePolicy(QSizePolicy.Expanding,
-                                                QSizePolicy.Expanding),
-                         **kwargs)
-        self.bridge = bridge
-        self.debug = debug
-        with open(_WEBVIEW_HELPERS, encoding="utf-8") as f:
-            self._onloadJS(f.read(),
-                           name='webview_helpers',
-                           injection_point=QWebEngineScript.DocumentCreation)
-
-        qtwebchannel_js = QFile("://qtwebchannel/qwebchannel.js")
-        if qtwebchannel_js.open(QFile.ReadOnly):
-            source = bytes(qtwebchannel_js.readAll()).decode("utf-8")
-            with open(_WEBENGINE_INIT_WEBCHANNEL, encoding="utf-8") as f:
-                init_webchannel_src = f.read()
-            self._onloadJS(source + init_webchannel_src %
-                           dict(exposeObject_prefix=self._EXPOSED_OBJ_PREFIX),
-                           name='webchannel_init',
-                           injection_point=QWebEngineScript.DocumentCreation)
-        else:
-            warnings.warn(
-                "://qtwebchannel/qwebchannel.js is not readable.",
-                RuntimeWarning)
-
-        self._onloadJS(';window.__load_finished = true;',
-                       name='load_finished',
-                       injection_point=QWebEngineScript.DocumentReady)
-
-        channel = QWebChannel(self)
-        if bridge is not None:
-            if isinstance(bridge, QWidget):
-                warnings.warn(
-                    "Don't expose QWidgets in WebView. Construct minimal "
-                    "QObjects instead.", OrangeDeprecationWarning,
-                    stacklevel=2)
-            channel.registerObject("pybridge", bridge)
-
-        channel.registerObject('__bridge', _QWidgetJavaScriptWrapper(self))
-
-        self.page().setWebChannel(channel)
-
-
-    def _onloadJS(self, code, name='', injection_point=DEFAULT_INJECTION_POINT):
-        if platform.system() == "Darwin":
-            script = QWebEngineScript()
-            script.setName(name or ('script_' + str(random())[2:]))
-            script.setSourceCode(code)
-            script.setInjectionPoint(injection_point)
-            script.setWorldId(script.MainWorld)
-            script.setRunsOnSubFrames(False)
-            self.page().scripts().insert(script)
-            self.loadStarted.connect(
-                lambda: self.page().scripts().insert(script))
-        else:
-            pass
-
-    def runJavaScript(self, javascript, resultCallback=None):
+if USE_WEB_KIT:
+    class WebEngineView(QWebEngineView):
         """
+        A QWebEngineView initialized to support communication with JS code.
         Parameters
         ----------
-        javascript : str
-            javascript code.
-        resultCallback : Optional[(object) -> None]
-            When the script has been executed the `resultCallback` will
-            be called with the result of the last executed statement.
+        parent : QWidget
+            Parent widget object.
+        bridge : QObject
+            The "bridge" object exposed as a global object ``pybridge`` in
+            JavaScript. Any methods desired to be accessible from JS need
+            to be decorated with ``@QtCore.pyqtSlot(<*args>, result=<type>)``
+            decorator.
+            Note: do not use QWidget instances as a bridge, use a minimal
+            QObject subclass implementing the required interface.
         """
-        if resultCallback is not None:
-            self.page().runJavaScript(javascript, resultCallback)
-        else:
-            self.page().runJavaScript(javascript)
+
+        if platform.system() == 'Darwin':
+            DEFAULT_INJECTION_POINT = QWebEngineScript.DocumentReady
+        elif platform.system() == 'Linux':
+            DEFAULT_INJECTION_POINT = None
+
+        # Prefix added to objects exposed via WebviewWidget.exposeObject()
+        # This caters to this class' subclass
+        _EXPOSED_OBJ_PREFIX = '__ORANGE_'
+
+        def __init__(self, parent=None, bridge=None, *, debug=False, **kwargs):
+            debug = debug or _ORANGE_DEBUG
+            if debug:
+                port = os.environ.setdefault('QTWEBENGINE_REMOTE_DEBUGGING', '12088')
+                warnings.warn(
+                    'To debug QWebEngineView, set environment variable '
+                    'QTWEBENGINE_REMOTE_DEBUGGING={port} and then visit '
+                    'http://127.0.0.1:{port}/ in a Chromium-based browser. '
+                    'See https://doc.qt.io/qt-5/qtwebengine-debugging.html '
+                    'This has also been done for you.'.format(port=port))
+            super().__init__(parent,
+                             sizeHint=QSize(500, 400),
+                             sizePolicy=QSizePolicy(QSizePolicy.Expanding,
+                                                    QSizePolicy.Expanding),
+                             **kwargs)
+            self.bridge = bridge
+            self.debug = debug
+            with open(_WEBVIEW_HELPERS, encoding="utf-8") as f:
+                self._onloadJS(f.read(),
+                               name='webview_helpers',
+                               injection_point=QWebEngineScript.DocumentCreation)
+
+            qtwebchannel_js = QFile("://qtwebchannel/qwebchannel.js")
+            if qtwebchannel_js.open(QFile.ReadOnly):
+                source = bytes(qtwebchannel_js.readAll()).decode("utf-8")
+                with open(_WEBENGINE_INIT_WEBCHANNEL, encoding="utf-8") as f:
+                    init_webchannel_src = f.read()
+                self._onloadJS(source + init_webchannel_src %
+                               dict(exposeObject_prefix=self._EXPOSED_OBJ_PREFIX),
+                               name='webchannel_init',
+                               injection_point=QWebEngineScript.DocumentCreation)
+            else:
+                warnings.warn(
+                    "://qtwebchannel/qwebchannel.js is not readable.",
+                    RuntimeWarning)
+
+            self._onloadJS(';window.__load_finished = true;',
+                           name='load_finished',
+                           injection_point=QWebEngineScript.DocumentReady)
+
+            channel = QWebChannel(self)
+            if bridge is not None:
+                if isinstance(bridge, QWidget):
+                    warnings.warn(
+                        "Don't expose QWidgets in WebView. Construct minimal "
+                        "QObjects instead.", OrangeDeprecationWarning,
+                        stacklevel=2)
+                channel.registerObject("pybridge", bridge)
+
+            channel.registerObject('__bridge', _QWidgetJavaScriptWrapper(self))
+
+            self.page().setWebChannel(channel)
+
+
+        def _onloadJS(self, code, name='', injection_point=DEFAULT_INJECTION_POINT):
+            if platform.system() == "Darwin":
+                script = QWebEngineScript()
+                script.setName(name or ('script_' + str(random())[2:]))
+                script.setSourceCode(code)
+                script.setInjectionPoint(injection_point)
+                script.setWorldId(script.MainWorld)
+                script.setRunsOnSubFrames(False)
+                self.page().scripts().insert(script)
+                self.loadStarted.connect(
+                    lambda: self.page().scripts().insert(script))
+            else:
+                pass
+
+        def runJavaScript(self, javascript, resultCallback=None):
+            """
+            Parameters
+            ----------
+            javascript : str
+                javascript code.
+            resultCallback : Optional[(object) -> None]
+                When the script has been executed the `resultCallback` will
+                be called with the result of the last executed statement.
+            """
+            if resultCallback is not None:
+                self.page().runJavaScript(javascript, resultCallback)
+            else:
+                self.page().runJavaScript(javascript)
 
 
 class ControlledAttributesDict(dict):

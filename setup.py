@@ -9,7 +9,7 @@ except ImportError:
 from setuptools import setup, find_packages
 
 NAME = "Oasys-Widget-Core"
-VERSION = "0.0.4"
+VERSION = "0.0.5"
 DESCRIPTION = "Core orange widget utilities"
 LONG_DESCRIPTION = open("README.txt", "rt").read()
 
