@@ -17,9 +17,9 @@ from PyQt5.QtWidgets import QApplication
 import platform
 
 try:
-    if platform.system() == 'Darwin':
+    if platform.system() == 'Darwin' or platform.system() == 'Windows':
         from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineScript
-    elif platform.system() == 'Linux':
+    else:
         from PyQt5.QtWebKitWidgets import QWebView as QWebEngineView
     USE_WEB_KIT = True
 except ImportError:
@@ -246,7 +246,7 @@ if USE_WEB_KIT:
             QObject subclass implementing the required interface.
         """
 
-        if platform.system() == 'Darwin':
+        if platform.system() == 'Darwin' or platform.system() == 'Windows':
             DEFAULT_INJECTION_POINT = QWebEngineScript.DocumentReady
         elif platform.system() == 'Linux':
             DEFAULT_INJECTION_POINT = None

@@ -5,6 +5,7 @@ dist
 *.pyc
 __pycache__
 MANIFEST
+ENV/*
 
 # hidden/temp files
 .*
