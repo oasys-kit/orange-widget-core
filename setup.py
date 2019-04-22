@@ -1,11 +1,5 @@
 #! /usr/bin/env python
 
-try:
-    import setuptools
-except ImportError:
-    import ez_setup
-    ez_setup.use_setuptools()
-
 from setuptools import setup, find_packages
 
 NAME = "Oasys-Widget-Core"

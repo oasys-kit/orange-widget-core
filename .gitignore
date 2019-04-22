@@ -5,10 +5,7 @@ dist
 *.pyc
 __pycache__
 MANIFEST
-
-# hidden/temp files
-.*
-*~
+ENV/*
 
 # Windows temp files
 Thumbs.db
