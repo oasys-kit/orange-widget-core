@@ -9,3 +9,4 @@ ENV/*
 
 # Windows temp files
 Thumbs.db
+/.idea/
