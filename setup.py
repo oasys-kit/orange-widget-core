@@ -3,7 +3,7 @@
 from setuptools import setup, find_packages
 
 NAME = "Oasys-Widget-Core"
-VERSION = "1.0.0"
+VERSION = "1.0.1"
 DESCRIPTION = "Core orange widget utilities"
 LONG_DESCRIPTION = open("README.txt", "rt").read()
 

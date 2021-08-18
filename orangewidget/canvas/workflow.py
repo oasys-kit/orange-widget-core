@@ -238,7 +238,9 @@ class WidgetManager(QObject):
         state = WidgetManager.Materialized(node, widget)
         self.__initstate_for_node[node] = state
 
-        future.set_result(widget)
+        try: future.set_result(widget)
+        except concurrent.futures.InvalidStateError: pass
+
         self.widget_for_node_added.emit(node, widget)
 
         return state
