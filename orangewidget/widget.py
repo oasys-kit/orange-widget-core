@@ -256,6 +256,8 @@ class OWWidget(QDialog, metaclass=WidgetMetaClass):
         """QDialog __init__ was already called in __new__,
         please do not call it here."""
 
+    def createdFromNode(self, node): self._node = node
+
     @classmethod
     def get_flags(cls):
         return (Qt.Window if cls.resizing_enabled
