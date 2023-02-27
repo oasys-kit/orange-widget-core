@@ -243,6 +243,8 @@ class WidgetManager(QObject):
 
         self.widget_for_node_added.emit(node, widget)
 
+        if hasattr(widget, "createdFromNode"):  widget.createdFromNode(node)
+
         return state
 
     def remove_widget_for_node(self, node):
