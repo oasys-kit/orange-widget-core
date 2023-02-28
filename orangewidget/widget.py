@@ -259,8 +259,11 @@ class OWWidget(QDialog, metaclass=WidgetMetaClass):
         """QDialog __init__ was already called in __new__,
         please do not call it here."""
 
-    def widgetNodeAdded(self, node_item): self._node_item = node_item
-    def createdFromNode(self, node): self._node = node
+    def widgetNodeAdded(self, node_item):
+        if self._node_item is None: self._node_item = node_item
+
+    def createdFromNode(self, node):
+        if self._node is None: self._node = node
 
     @classmethod
     def get_flags(cls):
