@@ -214,6 +214,9 @@ class OWWidget(QDialog, metaclass=WidgetMetaClass):
 
     savedWidgetGeometry = settings.Setting(None)
 
+    _node_item = None
+    _node      = None
+
     def __new__(cls, parent=None, *args, **kwargs):
         self = super().__new__(cls, None, cls.get_flags())
         QDialog.__init__(self, None, self.get_flags())
@@ -257,6 +260,7 @@ class OWWidget(QDialog, metaclass=WidgetMetaClass):
         please do not call it here."""
 
     def widgetNodeAdded(self, node_item): self._node_item = node_item
+    def createdFromNode(self, node): self._node = node
 
     @classmethod
     def get_flags(cls):
