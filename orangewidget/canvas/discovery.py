@@ -99,6 +99,9 @@ class WidgetDiscovery(discovery.WidgetDiscovery):
             desc.category = category_name
 
         if distribution is not None:
-            desc.project_name = distribution.project_name
+            # 17 Jan 2025: replaced pkg_resources with importlib (for now the third party version)
+            #              because of deprecation
+            #desc.project_name = distribution.project_name
+            desc.project_name = distribution.name
 
         return desc
