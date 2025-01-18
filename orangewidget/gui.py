@@ -6,7 +6,8 @@ import itertools
 import traceback
 from functools import reduce
 
-import pkg_resources
+#import pkg_resources
+import importlib_resources, importlib_metadata
 import numpy
 
 from PyQt5 import QtGui, QtCore, QtWidgets
@@ -61,7 +62,9 @@ def resource_filename(path):
     """
     Return a resource filename (package data) for path relative to this module.
     """
-    return pkg_resources.resource_filename(__name__, path)
+    #return pkg_resources.resource_filename(__name__, path)
+    ref = importlib_resources.files(__name__).joinpath(path)
+    with importlib_resources.as_file(ref) as file_name: return str(file_name)
 
 
 class TableWidget(QtWidgets.QTableWidget):
